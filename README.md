@@ -2,7 +2,7 @@ Description.
 
 The implementation of a Decimal type (C#) on the C. The type consists of a 1-bit sign, a 96-bit integer number,
 and a scaling factor used to divide the integer number and specify what portion of it is a decimal fraction.
-The scaling factor is implicitly the number 10, raised to an exponent ranging from 0 to 28 (or 29 if the number less
+The scaling factor is implicitly the number 10, raised to an exponent ranging from 0 to 28 (or 29 if the abs value of the number is less
 than 1 and the mantisse fits in 96 bits).
 Decimal number implemented as a four-element array of 32-bit unsigned integers (uint32_t bits[4]).
 Bits[0], bits[1], and bits[2] contain the low, middle, and high 32 bits of the 96-bit integer number accordingly.
