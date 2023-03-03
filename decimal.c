@@ -178,7 +178,7 @@ int dtoa(char* s, decimal inum)
     if (sign) *(s + j++) = '-';
     if (pow >= len) {
         *(s + j++) = '0';
-        *(s + j++) = '.';
+        if (pow) *(s + j++) = '.';
         while (pow > len) {
             *(s + j++) = '0';
             len++;
@@ -795,23 +795,32 @@ int from_float_to_decimal(float src, decimal* dst)
     char c2 = *(s + ++count);
     int exp = (c1 - 0x30) * 10 + (c2 - 0x30);
     if (sign_exp == '-') exp *= -1;
-    if (tmp % 10 == 9) tmp += 1;
     while (tmp % 10 == 0) {
         tmp /= 10;
         len--;
     }
     int pow = len - exp;
-    if (pow < 0) {
-        v256 v = {0};
-        v.u64[0] = tmp;
-        while (pow < 0) {
-            vmult_10(&v);
-            pow++;
-        }
-        *dst = v.dec;
-    } else {
-        dst->bits[0] = tmp;
+    v256 v = {0};
+    v.u64[0] = tmp;
+    if (testz(&v))
+        return ret;
+    while (pow < 0) {
+        vmult_10(&v);
+        pow++;
     }
+    int pos = vget_pos(v, VMAX_SIZE);
+    if (pos > MAX_SIZE - 1)
+        return ERROR;
+    uint64_t a = 0;
+    while (pow > MAX_POW) {
+        v = vdiv10(v, &a);
+        pow--;
+    }
+    if (testz(&v))
+        return ERROR;
+    if (a > 4)
+        v.u64[0]++;
+    *dst = v.dec;
     if (sign) bit_set(dst->bits[3], 31);
     insert_pow(dst, pow);
     return ret;

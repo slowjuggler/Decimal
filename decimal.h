@@ -130,24 +130,20 @@ inline void vshl(v256* vval, int shift) {
           "movq %[v1], %%r9\n\t"
           "movq %[v2], %%r10\n\t"
           "movq %[v3], %%r11\n\t"
-          "movq $0x8000000000000000, %%rbx\n\t"
           "1:\n\t"
           "shlq $1, %%r11\n\t"
-          "testq %%rbx, %%r10\n\t"
-          "jz 2f\n\t"
+          "shlq $1, %%r10\n\t"
+          "jnc 2f\n\t"
           "orq $1, %%r11\n\t"
           "2:\n\t"
-          "shlq $1, %%r10\n\t"
-          "testq %%rbx, %%r9\n\t"
-          "jz 3f\n\t"
+          "shlq $1, %%r9\n\t"
+          "jnc 3f\n\t"
           "orq $1, %%r10\n\t"
           "3:\n\t"
-          "shlq $1, %%r9\n\t"
-          "testq %%rbx, %%r8\n\t"
-          "jz 4f\n\t"
+          "shlq $1, %%r8\n\t"
+          "jnc 4f\n\t"
           "orq $1, %%r9\n\t"
           "4:\n\t"
-          "shlq $1, %%r8\n\t"
           "loop 1b\n\t"
           "movq %%r8, %[a]\n\t"
           "movq %%r9, %[b]\n\t"
@@ -169,25 +165,21 @@ inline void vshr(v256* vval, int shift) {
           "movq %[v1], %%r9\n\t"
           "movq %[v2], %%r10\n\t"
           "movq %[v3], %%r11\n\t"
-          "movq $0x1, %%rbx\n\t"
           "movq $0x8000000000000000, %%rdx\n\t"
           "1:\n\t"
           "shrq $1, %%r8\n\t"
-          "testq %%rbx, %%r9\n\t"
-          "jz 2f\n\t"
+          "shrq $1, %%r9\n\t"
+          "jnc 2f\n\t"
           "orq %%rdx, %%r8\n\t"
           "2:\n\t"
-          "shrq $1, %%r9\n\t"
-          "testq %%rbx, %%r10\n\t"
-          "jz 3f\n\t"
+          "shrq $1, %%r10\n\t"
+          "jnc 3f\n\t"
           "orq %%rdx, %%r9\n\t"
           "3:\n\t"
-          "shrq $1, %%r10\n\t"
-          "testq %%rbx, %%r11\n\t"
-          "jz 4f\n\t"
+          "shrq $1, %%r11\n\t"
+          "jnc 4f\n\t"
           "orq %%rdx, %%r10\n\t"
           "4:\n\t"
-          "shrq $1, %%r11\n\t"
           "loop 1b\n\t"
           "movq %%r8, %[a]\n\t"
           "movq %%r9, %[b]\n\t"
@@ -200,7 +192,6 @@ inline void vshr(v256* vval, int shift) {
             [shift] "m" (shift));
     *vval = tmp;
 }
-
 inline v256 add(v256 vval_1, v256 vval_2)
 {
     v256 vres = {0};
@@ -226,22 +217,16 @@ inline v256 sub(v256 vval_1, v256 vval_2)
     v256 vres = {0};
     __asm("movq %[v10], %%rbx\n\t"
           "movq %[v20], %%rdx\n\t"
-          "notq %%rdx\n\t"
-          "addq %%rdx, %%rbx\n\t"
+          "subq %%rdx, %%rbx\n\t"
           "movq %%rbx, %[a]\n\t"
           "movq %[v11], %%rbx\n\t"
           "movq %[v21], %%rdx\n\t"
-          "notq %%rdx\n\t"
-          "adcq %%rdx, %%rbx\n\t"
+          "sbbq %%rdx, %%rbx\n\t"
           "movq %%rbx, %[b]\n\t"
           "movq %[v12], %%rbx\n\t"
           "movq %[v22], %%rdx\n\t"
-          "notq %%rdx\n\t"
-          "adcq %%rdx, %%rbx\n\t"
+          "sbbq %%rdx, %%rbx\n\t"
           "movq %%rbx, %[c]\n\t"
-          "addq $1, %[a]\n\t"
-          "adcq $0, %[b]\n\t"
-          "adcq $0, %[c]\n\t"
           : [a] "=m" (vres.u64[0]), [b] "=m" (vres.u64[1]),
             [c] "=m" (vres.u64[2])
           : [v10] "m" (vval_1.u64[0]), [v20] "m" (vval_2.u64[0]),
@@ -419,4 +404,4 @@ inline v256 vdiv10(v256 val, uint64_t* a)
     return res;
 }
 
-#endif  // DECIMAL_H
+#endif  // DECIMAL_H_
