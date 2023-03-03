@@ -13,5 +13,5 @@ bits 24 to 30 are unused;
 bit 31 contains the sign: 0 meaning positive, and 1 meaning negative.
 The project includes arithmetic operations as well as rounding and comparasion operations. Due to the fact that 96 bits must be
 treated as a single bit string (i.e., to implement arithmetic and shifts, it is better to explicity refer to the flag register),
-some procedures are implemented using inline Assembly (x86_64). For convinience and testing procedures, the program includes a small
+some procedures are implemented using GNU Inline Assembly (x86-64). For convinience and testing procedures, the program includes a small
 calculator, with standart arithmetic and comparasion operations (+,-,/,*,%,==,!=,<=,>,<,>=). Type conversions can be seen in header file. 
